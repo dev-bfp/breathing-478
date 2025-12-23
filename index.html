@@ -1,215 +1,242 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Respiração 4-7-8</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Respiração 4-7-8</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
+<style>
+:root {
+  --bg: linear-gradient(135deg, #b6e3ff, #eef9ff);
+  --card: rgba(255,255,255,.85);
+  --text: #03314b;
+  --sub: #355f73;
+  --btn: #4aa3c7;
+}
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #b6e3ff, #eef9ff);
-      color: #03314b;
-      padding: 16px;
-    }
+body.dark {
+  --bg: linear-gradient(135deg, #0f2027, #203a43);
+  --card: rgba(20,30,40,.9);
+  --text: #eaf6ff;
+  --sub: #aac6d6;
+  --btn: #5fb3d6;
+}
 
-    .container {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(10px);
-      padding: clamp(20px, 5vw, 36px);
-      border-radius: 24px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-      text-align: center;
-      max-width: 380px;
-      width: 100%;
-    }
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
 
-    h1 {
-      margin-top: 0;
-      font-size: clamp(1.3rem, 4vw, 1.7rem);
-      margin-bottom: 8px;
-    }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  padding: 16px;
+  transition: background .3s;
+}
 
-    p {
-      font-size: clamp(0.9rem, 3.5vw, 1rem);
-      line-height: 1.5;
-      margin-bottom: 24px;
-      color: #355f73;
-    }
+.container {
+  background: var(--card);
+  backdrop-filter: blur(10px);
+  padding: 28px;
+  border-radius: 24px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,.15);
+}
 
-    .circle {
-      width: clamp(160px, 55vw, 220px);
-      height: clamp(160px, 55vw, 220px);
-      margin: 0 auto 24px;
-      border-radius: 50%;
-      background: radial-gradient(circle at top, #9adcf7, #4aa3c7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+h1 { margin: 0 0 8px; }
+p { color: var(--sub); }
 
-      /* Estado base MENOR */
-      transform: scale(0.6);
-      box-shadow: 0 0 10px rgba(79, 163, 199, 0.2);
-      transition: transform linear, box-shadow linear;
-    }
+.circle {
+  width: clamp(160px, 55vw, 220px);
+  height: clamp(160px, 55vw, 220px);
+  margin: 24px auto;
+  border-radius: 50%;
+  background: radial-gradient(circle at top, #9adcf7, #4aa3c7);
+  transform: scale(.6);
+  transition: transform linear, box-shadow linear;
+  box-shadow: 0 0 10px rgba(79,163,199,.2);
+}
 
-    .circle.grow {
-      transform: scale(1);
-      box-shadow: 0 0 45px rgba(79, 163, 199, 0.6);
-    }
+.circle.grow {
+  transform: scale(1);
+  box-shadow: 0 0 45px rgba(79,163,199,.6);
+}
 
-    .circle.shrink {
-      transform: scale(0.6);
-      box-shadow: 0 0 10px rgba(79, 163, 199, 0.2);
-    }
+.phase { font-size: 1.3rem; font-weight: 600; }
+.timer { font-size: 2.6rem; font-weight: bold; }
 
-    .phase {
-      font-size: clamp(1.1rem, 4vw, 1.3rem);
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
+.controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
 
-    .timer {
-      font-size: clamp(2rem, 8vw, 2.8rem);
-      font-weight: bold;
-    }
+button {
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: none;
+  font-size: 1rem;
+  background: var(--btn);
+  color: white;
+  cursor: pointer;
+}
 
-    .buttons {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 24px;
-    }
+button.secondary {
+  background: #9aaeb8;
+}
 
-    button {
-      padding: 12px 24px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 999px;
-      background: #4aa3c7;
-      color: #fff;
-      cursor: pointer;
-      transition: background 0.2s ease, transform 0.1s ease;
-      min-width: 120px;
-    }
+input {
+  width: 80px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
 
-    button:hover {
-      background: #3b92b4;
-    }
-
-    button:active {
-      transform: scale(0.97);
-    }
-
-    button.secondary {
-      background: #9aaeb8;
-    }
-  </style>
+.toggle {
+  margin-top: 16px;
+  cursor: pointer;
+  font-size: .9rem;
+}
+</style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>Respiração 4-7-8</h1>
-    <p>
-      Um exercício simples para reduzir ansiedade e acalmar a mente.<br />
-      Siga o ritmo guiado abaixo.
-    </p>
+<div class="container">
+  <h1>Respiração 4-7-8</h1>
+  <p>Exercício guiado para acalmar mente e corpo</p>
 
-    <div class="circle" id="circle"></div>
+  <div class="circle" id="circle"></div>
 
-    <div class="phase" id="phase">Pronto?</div>
-    <div class="timer" id="timer">—</div>
+  <div class="phase" id="phase">Pronto?</div>
+  <div class="timer" id="timer">—</div>
 
-    <div class="buttons">
-      <button id="startBtn">Iniciar</button>
-      <button id="stopBtn" class="secondary" style="display:none;">Parar</button>
-    </div>
+  <div style="margin-top:12px">
+    Ciclos:
+    <input type="number" id="cyclesInput" min="1" max="20" value="4">
   </div>
 
-  <script>
-    const phaseEl = document.getElementById('phase');
-    const timerEl = document.getElementById('timer');
-    const startBtn = document.getElementById('startBtn');
-    const stopBtn = document.getElementById('stopBtn');
-    const circle = document.getElementById('circle');
+  <div class="controls">
+    <button id="startBtn">Iniciar</button>
+    <button id="stopBtn" class="secondary" style="display:none">Parar</button>
+  </div>
 
-    let interval;
-    let running = false;
+  <div class="toggle" id="darkToggle">🌙 Modo escuro</div>
+</div>
 
-    const phases = [
-      { label: 'Inspire', seconds: 4, action: 'grow' },
-      { label: 'Segure', seconds: 7, action: 'hold' },
-      { label: 'Expire', seconds: 8, action: 'shrink' }
-    ];
+<script>
+const phaseEl = document.getElementById('phase');
+const timerEl = document.getElementById('timer');
+const circle = document.getElementById('circle');
+const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
+const cyclesInput = document.getElementById('cyclesInput');
+const darkToggle = document.getElementById('darkToggle');
 
-    function startExercise() {
-      if (running) return;
-      running = true;
+let interval, running = false, cycleCount = 0;
 
-      startBtn.disabled = true;
-      stopBtn.style.display = 'inline-block';
+// 🔊 Áudio
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(freq, duration = .3) {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.frequency.value = freq;
+  gain.gain.value = 0.05;
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+}
 
-      let phaseIndex = 0;
+// 📳 Vibração
+function vibrate(ms = 100) {
+  if (navigator.vibrate) navigator.vibrate(ms);
+}
 
-      function runPhase() {
-        if (!running) return;
+const phases = [
+  { label: 'Inspire', seconds: 4, action: 'grow', sound: 220 },
+  { label: 'Segure', seconds: 7, action: 'hold', sound: 160 },
+  { label: 'Expire', seconds: 8, action: 'shrink', sound: 320 }
+];
 
-        const phase = phases[phaseIndex];
-        let remaining = phase.seconds;
+function startExercise() {
+  if (running) return;
+  running = true;
+  cycleCount = 0;
 
-        phaseEl.textContent = phase.label;
-        timerEl.textContent = remaining;
+  startBtn.style.display = 'none';
+  stopBtn.style.display = 'inline-block';
 
-        circle.style.transitionDuration = phase.seconds + 's';
+  let phaseIndex = 0;
 
-        if (phase.action === 'grow') {
-          circle.classList.remove('shrink');
-          circle.classList.add('grow');
-        } else if (phase.action === 'shrink') {
-          circle.classList.remove('grow');
-          circle.classList.add('shrink');
-        }
+  function runPhase() {
+    if (!running) return;
 
-        interval = setInterval(() => {
-          remaining--;
-          timerEl.textContent = remaining;
+    const phase = phases[phaseIndex];
+    let remaining = phase.seconds;
 
-          if (remaining <= 0) {
-            clearInterval(interval);
-            phaseIndex = (phaseIndex + 1) % phases.length;
-            runPhase();
+    phaseEl.textContent = phase.label;
+    timerEl.textContent = remaining;
+
+    playSound(phase.sound);
+    vibrate();
+
+    circle.style.transitionDuration = phase.seconds + 's';
+    circle.classList.toggle('grow', phase.action === 'grow');
+    circle.classList.toggle('shrink', phase.action === 'shrink');
+
+    interval = setInterval(() => {
+      remaining--;
+      timerEl.textContent = remaining;
+
+      if (remaining <= 0) {
+        clearInterval(interval);
+        phaseIndex++;
+
+        if (phaseIndex >= phases.length) {
+          phaseIndex = 0;
+          cycleCount++;
+          if (cycleCount >= cyclesInput.value) {
+            stopExercise(true);
+            return;
           }
-        }, 1000);
+        }
+        runPhase();
       }
+    }, 1000);
+  }
+  runPhase();
+}
 
-      runPhase();
-    }
+function stopExercise(finished = false) {
+  running = false;
+  clearInterval(interval);
 
-    startBtn.addEventListener('click', startExercise);
+  phaseEl.textContent = finished ? 'Concluído 🌿' : 'Parado';
+  timerEl.textContent = '—';
 
-    stopBtn.addEventListener('click', () => {
-      running = false;
-      clearInterval(interval);
+  circle.classList.remove('grow','shrink');
+  circle.style.transform = 'scale(.6)';
 
-      phaseEl.textContent = 'Exercício parado';
-      timerEl.textContent = '—';
+  startBtn.style.display = 'inline-block';
+  stopBtn.style.display = 'none';
+}
 
-      startBtn.disabled = false;
-      stopBtn.style.display = 'none';
+startBtn.onclick = startExercise;
+stopBtn.onclick = () => stopExercise();
 
-      circle.classList.remove('grow', 'shrink');
-      circle.style.transform = 'scale(0.6)';
-    });
-  </script>
+// 🌙 Dark mode
+darkToggle.onclick = () => {
+  document.body.classList.toggle('dark');
+};
+</script>
 </body>
 </html>
