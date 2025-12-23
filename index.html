@@ -8,7 +8,7 @@
 <style>
 :root {
   --bg: linear-gradient(135deg, #b6e3ff, #eef9ff);
-  --card: rgba(255,255,255,.85);
+  --card: rgba(255,255,255,.88);
   --text: #03314b;
   --sub: #355f73;
   --btn: #4aa3c7;
@@ -16,7 +16,7 @@
 
 body.dark {
   --bg: linear-gradient(135deg, #0f2027, #203a43);
-  --card: rgba(20,30,40,.9);
+  --card: rgba(18,28,38,.92);
   --text: #eaf6ff;
   --sub: #aac6d6;
   --btn: #5fb3d6;
@@ -34,9 +34,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text);
   padding: 16px;
-  transition: background .3s;
+  color: var(--text);
 }
 
 .container {
@@ -50,8 +49,15 @@ body {
   box-shadow: 0 20px 40px rgba(0,0,0,.15);
 }
 
-h1 { margin: 0 0 8px; }
-p { color: var(--sub); }
+h1 {
+  margin: 0 0 6px;
+}
+
+p {
+  margin: 0 0 16px;
+  color: var(--sub);
+  font-size: .95rem;
+}
 
 .circle {
   width: clamp(160px, 55vw, 220px);
@@ -60,8 +66,9 @@ p { color: var(--sub); }
   border-radius: 50%;
   background: radial-gradient(circle at top, #9adcf7, #4aa3c7);
   transform: scale(.6);
-  transition: transform linear, box-shadow linear;
   box-shadow: 0 0 10px rgba(79,163,199,.2);
+  transition-property: transform, box-shadow;
+  transition-timing-function: linear;
 }
 
 .circle.grow {
@@ -69,37 +76,55 @@ p { color: var(--sub); }
   box-shadow: 0 0 45px rgba(79,163,199,.6);
 }
 
-.phase { font-size: 1.3rem; font-weight: 600; }
-.timer { font-size: 2.6rem; font-weight: bold; }
+.circle.shrink {
+  transform: scale(.6);
+  box-shadow: 0 0 10px rgba(79,163,199,.2);
+}
+
+.phase {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.timer {
+  font-size: 2.6rem;
+  font-weight: bold;
+}
+
+.config {
+  margin-top: 10px;
+  font-size: .9rem;
+}
+
+input {
+  width: 70px;
+  padding: 6px;
+  margin-left: 6px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
 
 .controls {
   display: flex;
-  gap: 10px;
   justify-content: center;
-  flex-wrap: wrap;
+  gap: 12px;
   margin-top: 20px;
+  flex-wrap: wrap;
 }
 
 button {
   padding: 12px 22px;
+  font-size: 1rem;
   border-radius: 999px;
   border: none;
-  font-size: 1rem;
   background: var(--btn);
-  color: white;
+  color: #fff;
   cursor: pointer;
 }
 
 button.secondary {
   background: #9aaeb8;
-}
-
-input {
-  width: 80px;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  text-align: center;
 }
 
 .toggle {
@@ -113,14 +138,14 @@ input {
 <body>
 <div class="container">
   <h1>Respiração 4-7-8</h1>
-  <p>Exercício guiado para acalmar mente e corpo</p>
+  <p>Exercício guiado para reduzir ansiedade</p>
 
   <div class="circle" id="circle"></div>
 
   <div class="phase" id="phase">Pronto?</div>
   <div class="timer" id="timer">—</div>
 
-  <div style="margin-top:12px">
+  <div class="config">
     Ciclos:
     <input type="number" id="cyclesInput" min="1" max="20" value="4">
   </div>
@@ -142,11 +167,13 @@ const stopBtn = document.getElementById('stopBtn');
 const cyclesInput = document.getElementById('cyclesInput');
 const darkToggle = document.getElementById('darkToggle');
 
-let interval, running = false, cycleCount = 0;
+let interval;
+let running = false;
+let cycleCount = 0;
 
-// 🔊 Áudio
+// 🔊 Som suave
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playSound(freq, duration = .3) {
+function playSound(freq, duration = .25) {
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.frequency.value = freq;
@@ -157,7 +184,7 @@ function playSound(freq, duration = .3) {
 }
 
 // 📳 Vibração
-function vibrate(ms = 100) {
+function vibrate(ms = 120) {
   if (navigator.vibrate) navigator.vibrate(ms);
 }
 
@@ -178,55 +205,57 @@ function startExercise() {
   let phaseIndex = 0;
 
   function runPhase() {
-  if (!running) return;
+    if (!running) return;
 
-  const phase = phases[phaseIndex];
-  let remaining = phase.seconds;
+    const phase = phases[phaseIndex];
+    let remaining = phase.seconds;
 
-  phaseEl.textContent = phase.label;
-  timerEl.textContent = remaining;
-
-  playSound(phase.sound);
-  vibrate();
-
-  // 🔴 RESETA estado sempre
-  circle.classList.remove('grow', 'shrink');
-
-  if (phase.action === 'grow') {
-    circle.style.transitionDuration = phase.seconds + 's';
-    circle.classList.add('grow');
-  }
-
-  if (phase.action === 'hold') {
-    // 🔒 Bola parada
-    circle.style.transitionDuration = '0s';
-  }
-
-  if (phase.action === 'shrink') {
-    circle.style.transitionDuration = phase.seconds + 's';
-    circle.classList.add('shrink');
-  }
-
-  interval = setInterval(() => {
-    remaining--;
+    phaseEl.textContent = phase.label;
     timerEl.textContent = remaining;
 
-    if (remaining <= 0) {
-      clearInterval(interval);
-      phaseIndex++;
+    playSound(phase.sound);
+    vibrate();
 
-      if (phaseIndex >= phases.length) {
-        phaseIndex = 0;
-        cycleCount++;
-        if (cycleCount >= cyclesInput.value) {
-          stopExercise(true);
-          return;
-        }
-      }
-      runPhase();
+    // 🔑 NÃO reseta no hold
+    if (phase.action === 'grow') {
+      circle.classList.remove('shrink');
+      circle.style.transitionDuration = phase.seconds + 's';
+      circle.classList.add('grow');
     }
-  }, 1000);
-}
+
+    if (phase.action === 'hold') {
+      // mantém bola GRANDE e parada
+      circle.style.transitionDuration = '0s';
+    }
+
+    if (phase.action === 'shrink') {
+      circle.classList.remove('grow');
+      circle.style.transitionDuration = phase.seconds + 's';
+      circle.classList.add('shrink');
+    }
+
+    interval = setInterval(() => {
+      remaining--;
+      timerEl.textContent = remaining;
+
+      if (remaining <= 0) {
+        clearInterval(interval);
+        phaseIndex++;
+
+        if (phaseIndex >= phases.length) {
+          phaseIndex = 0;
+          cycleCount++;
+
+          if (cycleCount >= cyclesInput.value) {
+            stopExercise(true);
+            return;
+          }
+        }
+        runPhase();
+      }
+    }, 1000);
+  }
+
   runPhase();
 }
 
@@ -237,7 +266,7 @@ function stopExercise(finished = false) {
   phaseEl.textContent = finished ? 'Concluído 🌿' : 'Parado';
   timerEl.textContent = '—';
 
-  circle.classList.remove('grow','shrink');
+  circle.classList.remove('grow', 'shrink');
   circle.style.transform = 'scale(.6)';
 
   startBtn.style.display = 'inline-block';
@@ -247,7 +276,7 @@ function stopExercise(finished = false) {
 startBtn.onclick = startExercise;
 stopBtn.onclick = () => stopExercise();
 
-// 🌙 Dark mode
+// 🌙 Modo escuro
 darkToggle.onclick = () => {
   document.body.classList.toggle('dark');
 };
