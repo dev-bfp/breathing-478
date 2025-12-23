@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Respiração 4-7-8</title>
+
   <style>
     * {
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-        Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     body {
@@ -17,50 +17,54 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #c3eaff, #e6f7ff);
+      background: linear-gradient(135deg, #b6e3ff, #eef9ff);
       color: #03314b;
+      padding: 16px;
     }
 
     .container {
-      background: #ffffffcc;
-      backdrop-filter: blur(6px);
-      padding: 32px 28px 36px;
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      padding: clamp(20px, 5vw, 36px);
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
       text-align: center;
-      max-width: 360px;
+      max-width: 380px;
       width: 100%;
     }
 
     h1 {
       margin-top: 0;
-      font-size: 1.6rem;
+      font-size: clamp(1.3rem, 4vw, 1.7rem);
       margin-bottom: 8px;
     }
 
     p {
-      font-size: 0.95rem;
-      line-height: 1.4;
+      font-size: clamp(0.9rem, 3.5vw, 1rem);
+      line-height: 1.5;
       margin-bottom: 24px;
       color: #355f73;
     }
 
     .circle {
-      width: 200px;
-      height: 200px;
-      margin: 0 auto 20px;
+      width: clamp(160px, 55vw, 220px);
+      height: clamp(160px, 55vw, 220px);
+      margin: 0 auto 24px;
       border-radius: 50%;
-      background: radial-gradient(circle at top, #8fd3f4, #4aa3c7);
+      background: radial-gradient(circle at top, #9adcf7, #4aa3c7);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 4s ease-in-out, box-shadow 4s ease-in-out;
-      box-shadow: 0 0 0 rgba(79, 163, 199, 0.4);
+
+      /* Estado base MENOR */
+      transform: scale(0.6);
+      box-shadow: 0 0 10px rgba(79, 163, 199, 0.2);
+      transition: transform linear, box-shadow linear;
     }
 
     .circle.grow {
       transform: scale(1);
-      box-shadow: 0 0 40px rgba(79, 163, 199, 0.6);
+      box-shadow: 0 0 45px rgba(79, 163, 199, 0.6);
     }
 
     .circle.shrink {
@@ -68,27 +72,26 @@
       box-shadow: 0 0 10px rgba(79, 163, 199, 0.2);
     }
 
-    .circle.shrink {
-      transform: scale(0.6);
-    }
-
-    .circle.grow {
-      transform: scale(1);
-    }
-
     .phase {
-      font-size: 1.2rem;
+      font-size: clamp(1.1rem, 4vw, 1.3rem);
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .timer {
-      font-size: 2.5rem;
+      font-size: clamp(2rem, 8vw, 2.8rem);
       font-weight: bold;
     }
 
-    button {
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
       margin-top: 24px;
+    }
+
+    button {
       padding: 12px 24px;
       font-size: 1rem;
       border: none;
@@ -97,6 +100,7 @@
       color: #fff;
       cursor: pointer;
       transition: background 0.2s ease, transform 0.1s ease;
+      min-width: 120px;
     }
 
     button:hover {
@@ -106,23 +110,30 @@
     button:active {
       transform: scale(0.97);
     }
+
+    button.secondary {
+      background: #9aaeb8;
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
-    <h1>Respiração 4‑7‑8</h1>
+    <h1>Respiração 4-7-8</h1>
     <p>
       Um exercício simples para reduzir ansiedade e acalmar a mente.<br />
       Siga o ritmo guiado abaixo.
     </p>
 
-    <div class="circle grow" id="circle"></div>
+    <div class="circle" id="circle"></div>
 
     <div class="phase" id="phase">Pronto?</div>
     <div class="timer" id="timer">—</div>
 
-    <button id="startBtn">Iniciar exercício</button>
-    <button id="stopBtn" style="display:none;background:#aaa;margin-left:8px;">Parar</button>
+    <div class="buttons">
+      <button id="startBtn">Iniciar</button>
+      <button id="stopBtn" class="secondary" style="display:none;">Parar</button>
+    </div>
   </div>
 
   <script>
@@ -144,6 +155,7 @@
     function startExercise() {
       if (running) return;
       running = true;
+
       startBtn.disabled = true;
       stopBtn.style.display = 'inline-block';
 
@@ -158,14 +170,14 @@
         phaseEl.textContent = phase.label;
         timerEl.textContent = remaining;
 
+        circle.style.transitionDuration = phase.seconds + 's';
+
         if (phase.action === 'grow') {
           circle.classList.remove('shrink');
           circle.classList.add('grow');
-          circle.style.transitionDuration = phase.seconds + 's';
         } else if (phase.action === 'shrink') {
           circle.classList.remove('grow');
           circle.classList.add('shrink');
-          circle.style.transitionDuration = phase.seconds + 's';
         }
 
         interval = setInterval(() => {
@@ -188,11 +200,15 @@
     stopBtn.addEventListener('click', () => {
       running = false;
       clearInterval(interval);
+
       phaseEl.textContent = 'Exercício parado';
       timerEl.textContent = '—';
+
       startBtn.disabled = false;
       stopBtn.style.display = 'none';
+
       circle.classList.remove('grow', 'shrink');
+      circle.style.transform = 'scale(0.6)';
     });
   </script>
 </body>
