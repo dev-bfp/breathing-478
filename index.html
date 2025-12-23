@@ -163,8 +163,8 @@ function vibrate(ms = 100) {
 
 const phases = [
   { label: 'Inspire', seconds: 4, action: 'grow', sound: 220 },
-  { label: 'Segure', seconds: 7, action: 'shrink', sound: 160 },
-  { label: 'Expire', seconds: 8, action: 'hold', sound: 320 }
+  { label: 'Segure', seconds: 7, action: 'hold', sound: 160 },
+  { label: 'Expire', seconds: 8, action: 'shrink', sound: 320 }
 ];
 
 function startExercise() {
@@ -178,41 +178,55 @@ function startExercise() {
   let phaseIndex = 0;
 
   function runPhase() {
-    if (!running) return;
+  if (!running) return;
 
-    const phase = phases[phaseIndex];
-    let remaining = phase.seconds;
+  const phase = phases[phaseIndex];
+  let remaining = phase.seconds;
 
-    phaseEl.textContent = phase.label;
+  phaseEl.textContent = phase.label;
+  timerEl.textContent = remaining;
+
+  playSound(phase.sound);
+  vibrate();
+
+  // 🔴 RESETA estado sempre
+  circle.classList.remove('grow', 'shrink');
+
+  if (phase.action === 'grow') {
+    circle.style.transitionDuration = phase.seconds + 's';
+    circle.classList.add('grow');
+  }
+
+  if (phase.action === 'hold') {
+    // 🔒 Bola parada
+    circle.style.transitionDuration = '0s';
+  }
+
+  if (phase.action === 'shrink') {
+    circle.style.transitionDuration = phase.seconds + 's';
+    circle.classList.add('shrink');
+  }
+
+  interval = setInterval(() => {
+    remaining--;
     timerEl.textContent = remaining;
 
-    playSound(phase.sound);
-    vibrate();
+    if (remaining <= 0) {
+      clearInterval(interval);
+      phaseIndex++;
 
-    circle.style.transitionDuration = phase.seconds + 's';
-    circle.classList.toggle('grow', phase.action === 'grow');
-    circle.classList.toggle('shrink', phase.action === 'shrink');
-
-    interval = setInterval(() => {
-      remaining--;
-      timerEl.textContent = remaining;
-
-      if (remaining <= 0) {
-        clearInterval(interval);
-        phaseIndex++;
-
-        if (phaseIndex >= phases.length) {
-          phaseIndex = 0;
-          cycleCount++;
-          if (cycleCount >= cyclesInput.value) {
-            stopExercise(true);
-            return;
-          }
+      if (phaseIndex >= phases.length) {
+        phaseIndex = 0;
+        cycleCount++;
+        if (cycleCount >= cyclesInput.value) {
+          stopExercise(true);
+          return;
         }
-        runPhase();
       }
-    }, 1000);
-  }
+      runPhase();
+    }
+  }, 1000);
+}
   runPhase();
 }
 
